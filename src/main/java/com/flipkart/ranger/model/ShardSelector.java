@@ -39,7 +39,10 @@ public abstract class ShardSelector<T, ServiceRegistryType extends ServiceRegist
         for (ServiceNode<T> node: nodes) {
             if (HealthcheckStatus.healthy == node.getHealthcheckStatus() && node.getLastUpdatedTimeStamp() > zombieCheckThresholdTime) {
                 serviceableNodes.add(node);
-            } else if (HealthcheckStatus.unhealthy == node.getHealthcheckStatus() && node.getLastUpdatedTimeStamp() > zombieCheckThresholdTime) {
+            } else if (HealthcheckStatus.healthy == node.getHealthcheckStatus() && node.getLastUpdatedTimeStamp() <= zombieCheckThresholdTime) {
+                // Node was marked healthy before losing connection / getting zombified
+                unhealthyNodes.add(node);
+            } else if (HealthcheckStatus.unhealthy == node.getHealthcheckStatus()) {
                 unhealthyNodes.add(node);
             }
         }
